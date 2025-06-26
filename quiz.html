@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Quiz</title>
+  <style>
+    body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+    .quiz-box { background: #fff; padding: 20px; max-width: 800px; margin: auto; border-radius: 8px; }
+    .question { margin-bottom: 15px; }
+    .option { padding: 10px; margin: 6px 0; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; }
+    .selected { background: #e0f0ff; border-color: #007BFF; }
+    .correct { background-color: #c8e6c9; border-color: green; color: green; }
+    .wrong { background-color: #ffcdd2; border-color: red; color: red; }
+    .disabled { pointer-events: none; }
+    #submit { padding: 10px 30px; font-size: 16px; margin-top: 20px; }
+    #score { font-size: 20px; margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="quiz-box">
+    <h2>Test Quiz</h2>
+    <div id="quiz"></div>
+    <button id="submit">Submit</button>
+    <div id="score"></div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "1. Capital of India?",
+        options: ["Mumbai", "Delhi", "Kolkata", "Chennai"],
+        answer: 1
+      },
+      {
+        question: "2. Largest ocean?",
+        options: ["Atlantic", "Indian", "Pacific", "Arctic"],
+        answer: 2
+      }
+    ];
+
+    const quiz = document.getElementById("quiz");
+
+    quizData.forEach((q, qIndex) => {
+      const div = document.createElement("div");
+      div.classList.add("question");
+      div.innerHTML = `<p><strong>${q.question}</strong></p>`;
+      q.options.forEach((opt, i) => {
+        const optDiv = document.createElement("div");
+        optDiv.className = "option";
+        optDiv.textContent = opt;
+        optDiv.dataset.qIndex = qIndex;
+        optDiv.dataset.optIndex = i;
+        optDiv.onclick = function () {
+          const siblings = div.querySelectorAll(".option");
+          siblings.forEach(sib => sib.classList.remove("selected"));
+          this.classList.add("selected");
+        };
+        div.appendChild(optDiv);
+      });
+      quiz.appendChild(div);
+    });
+
+    document.getElementById("submit").onclick = function () {
+      let score = 0;
+      const questions = document.querySelectorAll(".question");
+
+      questions.forEach((qDiv, i) => {
+        const selected = qDiv.querySelector(".selected");
+        const options = qDiv.querySelectorAll(".option");
+        const correct = quizData[i].answer;
+
+        options.forEach((opt, j) => {
+          opt.classList.add("disabled");
+          if (j === correct) {
+            opt.classList.add("correct");
+          }
+        });
+
+        if (selected) {
+          const selIndex = parseInt(selected.dataset.optIndex);
+          if (selIndex === correct) {
+            score += 2;
+          } else {
+            selected.classList.add("wrong");
+            score -= 0.33;
+          }
+        }
+      });
+
+      document.getElementById("score").textContent = `🎯 Score: ${score.toFixed(2)} / ${quizData.length * 2}`;
+      this.disabled = true;
+    };
+  </script>
+</body>
+</html>
